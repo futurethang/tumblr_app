@@ -1,5 +1,6 @@
 class PostsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
+  before_action :find_post, except: [:index, :create, :new]
   def index
     @posts = Post.all.order('created_at DESC')
   end
@@ -19,17 +20,14 @@ class PostsController < ApplicationController
   end
 
   def show
-    @post = Post.find(params[:id])
   end
 
   def edit
-    @post = Post.find(params[:id])
   end
 
   def update
-    @post = Post.find(params[:id])
 
-    if @post.update(params[:post].permit(:title, :body))
+    if @post.update(post_params)
       redirect_to @post
     else
       render 'edit'
@@ -37,7 +35,6 @@ class PostsController < ApplicationController
   end
 
   def destroy
-    @post = Post.find(params[:id])
     @post.destroy
 
     redirect_to root_path
@@ -48,5 +45,8 @@ class PostsController < ApplicationController
       params.require(:post).permit(:title, :body)
     end
 
+    def find_post
+      @post = Post.find(params[:id])
+    end
 
 end
